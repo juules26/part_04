@@ -20,7 +20,7 @@
 - connect application
 - copy URI + add to index.js
 (password: sX8zezc7kFjf)
-- .env add MONGOURI:'mongodb+srv://juules26:sX8zezc7kFjf@cluster0.cvvzf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+- .env add MONGOURI:'mongodb+srv://juules26:<password>@cluster0.cvvzf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
 
 6. npm install dotenv
 
