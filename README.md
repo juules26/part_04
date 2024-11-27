@@ -1,4 +1,5 @@
-# part_04
+# part_04 (working npm project)
+#   4.1
 1. Initialize my project:
 - nmp init -y
 
@@ -29,3 +30,42 @@ dotenv.config();
 const mongoUrl = process.env.MONGODB_URI;
 
 8. model/blog.js and add schema
+
+#   4.2 (Refactor)
+
+1. New structure for my project:
+
+part_04/
+|-- controllers/
+|   |-- blogs.js
+|-- models/
+|   |-- blog.js
+|-- node_modules --- x
+|-- utils/
+|   |-- config.js
+|   |-- logger.js
+|   |-- middleware.js
+|-- .env --- x
+|-- .gitignore
+|-- app.js
+|-- index.js
+|-- package-lock.json
+|-- package.json
+|-- README.md
+
+2. model/blog.js
+(the Schema)
+
+3. Router in controllers/blogs.js
+(get, post routes)
+
+4. app.js to handle Middlewares and Routes
+(all the imports, connect mongoose, app.use)
+
+5. index.js to start server
+(import app, config, logger + PORT)
+
+6. set up utils/congif.js
+(PORT + MONGO_URI)
+
+7. utils/logger.js for Logging

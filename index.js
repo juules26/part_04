@@ -7,6 +7,7 @@ import Blog from './models/blog.js'
 dotenv.config()
 
 const app = express()
+
 const mongoUrl = process.env.MONGODB_URI
 mongoose.connect(mongoUrl)
   .then(() => {
