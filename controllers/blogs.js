@@ -1,5 +1,7 @@
+console.log('blogs.js loaded')
+
 // It allows interaction w/ 'blogs' collection in Mongo db
-import Blog from '../models/blog'
+import Blog from '../models/blog.js'
 // Import Express to create a new router for handling blog-related routes
 import express from 'express'
 
@@ -27,6 +29,20 @@ router.post('/', async (req, res) => { // Define POST route to add new blog
     } catch (error) {
         console.error(error) // Log errors to console
         res.status(500).send({ error: 'Failed to add blog' })
+    }
+})
+// Route for deleting a blog
+router.delete('/:id', async (req,res) => {
+    console.log('DELETE /api/blogs', req.params.id)
+    try {
+        const blog = await Blog.findOneAndDelete(req.params.id)
+        if (!blog) {
+            return res.status(404).json({ error: 'Blog not found' })
+        }
+        res.status(200).json({ message: 'Blog deleted' })
+    } catch (error) {
+        console.log('Error deleting blog:', error)
+        res.status(500).json({ error: 'Failed to delete blog' })
     }
 })
 
