@@ -1,0 +1,37 @@
+
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+    "username": "juules",
+    "name": "julia",
+    "password": "whatever"
+}
+###
+
+POST http://localhost:3001/api/login
+Content-Type: application/json
+
+{
+    "username": "jules",
+    "password": "whatever"
+}
+###
+
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhY2EiLCJpZCI6IjY3ODdmNWZlZThhNTU4NDIwM2U4N2Q3ZiIsImlhdCI6MTczNzEzNjM2NX0.sreYdH1HzpwjtmRUBzqJj8t1rlzxFhWqOfHgwbxdg_0
+
+{
+    "title": "Tercer Blog",
+    "url": "blog.com",
+    "author": "JULIA CASARES",
+    "likes": 5
+}
+###
+
+DELETE http://localhost:3001/api/blogs/679233069aa04320b99d0f1b
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhY2EiLCJpZCI6IjY3ODdmNWZlZThhNTU4NDIwM2U4N2Q3ZiIsImlhdCI6MTczNzEzNjM2NX0.sreYdH1HzpwjtmRUBzqJj8t1rlzxFhWqOfHgwbxdg_0
+###
+
+GET http://localhost:3001/api/blogs

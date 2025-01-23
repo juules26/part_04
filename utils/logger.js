@@ -1,11 +1,15 @@
 // Funct to log general info
-const info = (message) => {
-    console.log(`INFO: ${message}`)
+const info = (...params) => {
+    if (process.env.NODE_ENV !== 'test') {
+        console.log(...params)
+    }
 }
 
 // Funct to log errors
-const error = (message) => {
-    console.error(`ERROR: ${message}`)
+const error = (...params) => {
+    if (process.env.NODE_ENV !== 'test') {
+        console.error(...params)
+    }
 }
 
 // Export logging functions

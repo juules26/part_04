@@ -1,49 +1,101 @@
-console.log('blogs.js loaded')
-
-// It allows interaction w/ 'blogs' collection in Mongo db
+import 'express-async-errors'
 import Blog from '../models/blog.js'
-// Import Express to create a new router for handling blog-related routes
 import express from 'express'
+import mongoose from 'mongoose'
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+import { useExtractor } from '../utils/middleware.js'
 
-// Create express router to define routes specific to 'blogs'
-const router = express.Router()
+dotenv.config()
+const blogsRouter = express.Router()
 
-// Route for getting all blogs
-router.get('/', async (req, res) => { // Define GET route to fetch all blogs
-    try {
-        const blogs = await Blog.find({}) // Use Blog model to fetch all blog entries from db
-        res.json(blogs) // Respond w/ list of blogs in JSON format
-    } catch (error) {
-        console.log(error) // Log any errors
-        res.status(500).send({ error: 'Soomething went wrong' })
-    }
-})
-// Route for adding a new blog
-router.post('/', async (req, res) => { // Define POST route to add new blog
-    try {
-        const { title, author, url, likes } = req.body // Desestructure data from the req body (blog data)
-        const newBlog = new Blog({ title, author, url, likes }) // Create new instance of the Blog model
-
-        const savedBlog = await newBlog.save() // Save new blog to db and wait to complete
-        res.status(201).json(savedBlog) // Respond with saved blog in JSON and status (created)
-    } catch (error) {
-        console.error(error) // Log errors to console
-        res.status(500).send({ error: 'Failed to add blog' })
-    }
-})
-// Route for deleting a blog
-router.delete('/:id', async (req,res) => {
-    console.log('DELETE /api/blogs', req.params.id)
-    try {
-        const blog = await Blog.findOneAndDelete(req.params.id)
-        if (!blog) {
-            return res.status(404).json({ error: 'Blog not found' })
-        }
-        res.status(200).json({ message: 'Blog deleted' })
-    } catch (error) {
-        console.log('Error deleting blog:', error)
-        res.status(500).json({ error: 'Failed to delete blog' })
-    }
+blogsRouter.get('/', async (req, res) => {
+    const blogs = await Blog.find({})
+        .populate('user', { username: 1, name: 1 })
+    res.json(blogs)
 })
 
-export default router // Export router to be used in app.js (so it can be used in the main app)
+const getTokenFrom = (request) => {
+    const authorization = request.get('authorization')
+    if (authorization && authorization.startsWith('Bearer ')) {
+        return authorization.replace('Bearer ', '')
+    }
+    return null
+}
+
+blogsRouter.post('/', useExtractor, async (req, res) => {
+    console.log(req.token)
+    const { title, url, author, likes = 0 } = req.body
+    if (!title || !url) {
+        return res.status(400).json({ error: 'Title or URL missing' })
+    }
+
+    const token = getTokenFrom(req)
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    if (!decodedToken.id) {
+        return res.status(401).json({ error: 'Token invalid' })
+    }
+
+    const user = req.user
+    if (!user) {
+        return res.status(401).json({ error: 'User not authenticated' })
+    }
+    const newBlog = new Blog({
+        title,
+        user: user.id,
+        author,
+        url,
+        likes,
+    })
+
+    const savedBlog = await newBlog.save()
+    console.log('blog guardado', savedBlog)
+    user.blogs = user.blogs.concat(savedBlog._id)
+    await user.save()
+
+    res.status(201).json(savedBlog)
+})
+
+blogsRouter.delete('/:id', useExtractor, async (req, res) => {
+    const { id } = req.params
+
+    const decodedToken = jwt.verify(req.token, process.env.SECRET)
+
+    if (!mongoose.isValidObjectId(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' })
+    }
+    const blog = await Blog.findById(id)
+    if (!blog) {
+        return res.status(404).json({ error: 'Blog not found' })
+    }
+    const user = req.user
+    if (!user) {
+        return res.status(401).json({ error: 'User not authenticated' })
+    }
+
+    if (blog.user.toString() !== decodedToken.id) {
+        return res.status(403).json({ error: 'Permission denied: you are not the blog creator' })
+    }
+    await Blog.findByIdAndDelete(id)
+    res.status(204).end()
+})
+
+blogsRouter.put('/:id', async (req, res) => {
+    const { likes } = req.body
+
+    if (typeof likes !== 'number' || likes < 0) {
+        return res.status(400).json({ error: 'Likes value must be a positive number' })
+    }
+
+    const updatedBlog = await Blog.findByIdAndUpdate(
+        req.params.id,
+        { likes },
+        { new: true, runValidators: true }
+    )
+    if (!updatedBlog) {
+        return res.status(404).json({ error: 'Blog not found' })
+    }
+    res.json(updatedBlog)
+})
+
+export default blogsRouter

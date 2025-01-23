@@ -1,13 +1,9 @@
-const dummy = (blogs) => {
-    return 1
+import Blog from '/models/blog.js'
+
+const blogsInDb = async() => {
+    const blogs = await Blog.find({})
+    return blogs.map(blog => blog.toJSON())
 }
 
-const totalLikes = (blogs) => {
-    return  blogs.reduce((sum, blog) => sum + blog.likes, 0)
-}
 
-const favoriteBlog = (blogs) => {
-    return blogs.reduce((max, blog) => (blog.likes > max.likes ? blog : max), blogs[0])
-}
-
-export default { dummy, totalLikes, favoriteBlog }
+export default { blogsInDb }
