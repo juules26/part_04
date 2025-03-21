@@ -10,8 +10,9 @@ dotenv.config()
 const blogsRouter = express.Router()
 
 blogsRouter.get('/', async (req, res) => {
+    console.log('Ruta GET /blogs alcanzada')
     const blogs = await Blog.find({})
-        .populate('user', { username: 1, name: 1 })
+        .populate('user', { username: 1, name: 1, id: 1})
     res.json(blogs)
 })
 
@@ -30,12 +31,6 @@ blogsRouter.post('/', useExtractor, async (req, res) => {
         return res.status(400).json({ error: 'Title or URL missing' })
     }
 
-    const token = getTokenFrom(req)
-    const decodedToken = jwt.verify(token, process.env.SECRET)
-    if (!decodedToken.id) {
-        return res.status(401).json({ error: 'Token invalid' })
-    }
-
     const user = req.user
     if (!user) {
         return res.status(401).json({ error: 'User not authenticated' })
@@ -49,9 +44,9 @@ blogsRouter.post('/', useExtractor, async (req, res) => {
     })
 
     const savedBlog = await newBlog.save()
-    console.log('blog guardado', savedBlog)
+    await savedBlog.populate('user', {username:1, name:1, id:1})
+    console.log('nuevo blog creado:', savedBlog)
     user.blogs = user.blogs.concat(savedBlog._id)
-    await user.save()
 
     res.status(201).json(savedBlog)
 })
@@ -91,7 +86,7 @@ blogsRouter.put('/:id', async (req, res) => {
         req.params.id,
         { likes },
         { new: true, runValidators: true }
-    )
+    ).populate('user', {username: 1, name: 1})
     if (!updatedBlog) {
         return res.status(404).json({ error: 'Blog not found' })
     }

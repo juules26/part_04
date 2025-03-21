@@ -1,9 +1,11 @@
 import User from "../models/user.js"
+import jwt from "jsonwebtoken"
 
 // Middleware to log incoming req
 const requestLogger = (req, res, next) => {
-    console.log(`${req.method} ${req.path} - Body:`, req.body)
-    next()
+    if (req.body.length > 0) {
+        console.log(`${req.method} ${req.path} - Body:`, req.body)
+    } next()
 }
 
 // Middleware to handle unknown endpoints
@@ -38,22 +40,32 @@ const tokenExtractor = (req, res, next) => {
     next()
 }
 
-const verifyToken = (token) => {
+const verifyToken = async (token) => {
     try {
-        const decodedToken = jwt.verifyToken(token, process.env.SECRET)
-        return User.findById(decodedToken.id)
+        const decodedToken = jwt.verify(token, process.env.SECRET)
+        const user = await User.findById(decodedToken.id)
+        return user
     } catch (error) {
+        console.error('error en verifyToken:', error.message)
         return null
     }
 }
 
-const useExtractor = (req, res, next) => {
-    const token = req.headers['authorization'] // get the authorization header from req
+const useExtractor = async (req, res, next) => {
+    const authorization = req.get('Authorization')
+    let token = null
+    if (authorization && authorization.startsWith('Bearer ')) {
+        token = authorization.replace('Bearer ', '')
+    }
     if (token) {
-        const user = verifyToken(token)
-        req.user = user // attach user to req obj
+        const user = await verifyToken(token)
+        if (!user) {
+            console.error('No se encontró usuario')
+        }
+        req.user = user
     } else {
-        req.user = null // no token no user
+        req.user = null 
+        console.error('Token no encontrado o validado')
     }
     next()
 }

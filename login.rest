@@ -1,4 +1,3 @@
-
 POST http://localhost:3001/api/users
 Content-Type: application/json
 
@@ -34,4 +33,17 @@ DELETE http://localhost:3001/api/blogs/679233069aa04320b99d0f1b
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhY2EiLCJpZCI6IjY3ODdmNWZlZThhNTU4NDIwM2U4N2Q3ZiIsImlhdCI6MTczNzEzNjM2NX0.sreYdH1HzpwjtmRUBzqJj8t1rlzxFhWqOfHgwbxdg_0
 ###
 
-GET http://localhost:3001/api/blogs
+GET http://localhost:3001/api/blogs/67ae3470ec1dca95301c298f
+###
+
+PUT http://localhost:3001/api/blogs/67ae3470ec1dca95301c298f
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imp1bGVzIiwiaWQiOiI2Nzk3Y2U3NWZiNTQ4ZmE5YTMxNTI3M2IiLCJpYXQiOjE3Mzk0Njg0NjF9.kjHbVOu_MwftXZyYqvnr3GsOzQpwaIzzxEGdPTwBGDI
+
+{
+  "user": "6797ce75fb548fa9a315273b",
+  "likes": 1,
+  "author": "Julesss",
+  "title": "Blog ejercicio 5.8",
+  "url": "ldjnelkfmk"
+}
