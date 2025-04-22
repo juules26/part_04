@@ -43,7 +43,13 @@ const tokenExtractor = (req, res, next) => {
 const verifyToken = async (token) => {
     try {
         const decodedToken = jwt.verify(token, process.env.SECRET)
+        if (!decodedToken.id) {
+            return null
+        }
         const user = await User.findById(decodedToken.id)
+        if (!user) {
+            return null
+        }
         return user
     } catch (error) {
         console.error('error en verifyToken:', error.message)
@@ -60,7 +66,7 @@ const useExtractor = async (req, res, next) => {
     if (token) {
         const user = await verifyToken(token)
         if (!user) {
-            console.error('No se encontró usuario')
+            return res.status(401).json({ error: 'Token invalid or user not found' })
         }
         req.user = user
     } else {

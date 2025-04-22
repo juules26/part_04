@@ -29,6 +29,11 @@ app.use('/api/login', loginRouter)
 
 app.use(errorHandler)
 
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = await import('./controllers/testing.js')
+  app.use('/api/testing', testingRouter.default)
+}
+
 app.get('/api/blogs', async (req, res) => {
     const blogs = await Blog.find({}); // Esto asegura que se consulta MongoDB cada vez
     res.json(blogs);
@@ -61,7 +66,7 @@ app.put('/api/blogs/:id', async (req, res) => {
     if (!blog) {
       return res.status(404).json({ error: 'blog not found' })
     }
-    if (blog.user.toString() !== req.user.id) {
+    if (!req.user || blog.user.toString() !== req.user.id) {
       return res.status(403).json({ error: 'you can only delete your own blogs' })
     }
     await Blog.findByIdAndRemove(req.params.id)
