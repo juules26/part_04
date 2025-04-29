@@ -1,71 +1,29 @@
-# part_04 (working npm project)
-#   4.1
-1. Initialize my project:
-- nmp init -y
+# Bloglist Backend
 
-2. Install dependencies:
-- npm install express mongoose cors
-- npm install --save-dev nodemon
+Este es el backend de la aplicación de blogs, donde se manejan las rutas para registrar usuarios, agregar, editar y eliminar blogs, así como dar likes.
 
-3. Configure nodemon:
-"scripts": {
-  "start": "node index.js",
-  "dev": "nodemon index.js"
-}
-    - this allows npm run dev (nodemon) for development or npm start for production
+Usa **Node.js**, **Express** y **MongoDB** para almacenar los datos.
 
-4. Create index.js file
+## Características
 
-5. Set up MongoDB connection
-- create new databsae and collection
-- connect application
-- copy URI + add to index.js
+- API RESTful para manejar blogs
+- Autenticación de usuarios con JWT (JSON Web Token)
+- CRUD (Crear, Leer, Actualizar, Eliminar) para los blogs
+- Validaciones para los datos
+- Manejo de errores
 
-- .env add MONGOURI:'mongodb+srv://juules26:<password>@cluster0.cvvzf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+## Tecnologías usadas
 
-6. npm install dotenv
+- **Backend:** Node.js, Express
+- **Base de datos:** MongoDB, Mongoose
+- **Autenticación:** JWT (JSON Web Tokens)
 
-7. Modify index.js to load env variables
-dotenv.config();
-const mongoUrl = process.env.MONGODB_URI;
+## Cómo iniciar el backend
 
-8. model/blog.js and add schema
+Primero, asegúrate de tener **MongoDB** corriendo localmente o usar un servicio como **MongoDB Atlas**.
 
-#   4.2 (Refactor)
-
-1. New structure for my project:
-
-part_04/
-|-- controllers/
-|   |-- blogs.js
-|-- models/
-|   |-- blog.js
-|-- node_modules --- x
-|-- utils/
-|   |-- config.js
-|   |-- logger.js
-|   |-- middleware.js
-|-- .env --- x
-|-- .gitignore
-|-- app.js
-|-- index.js
-|-- package-lock.json
-|-- package.json
-|-- README.md
-
-2. model/blog.js
-(the Schema)
-
-3. Router in controllers/blogs.js
-(get, post routes)
-
-4. app.js to handle Middlewares and Routes
-(all the imports, connect mongoose, app.use)
-
-5. index.js to start server
-(import app, config, logger + PORT)
-
-6. set up utils/congif.js
-(PORT + MONGO_URI)
-
-7. utils/logger.js for Logging
+```bash
+git clone https://github.com/[tu usuario]/bloglist-backend.git
+cd bloglist-backend
+npm install
+npm start
